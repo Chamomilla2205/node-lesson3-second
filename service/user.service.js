@@ -1,17 +1,26 @@
-const path = require('path')
-const fs = require('fs')
-const {promisify} = require('util')
+const path = require('path');
+const fs = require('fs');
+const {promisify} = require('util');
 
 const readFilePromise = promisify(fs.readFile);
 const writeFilePromise = promisify(fs.writeFile);
 
-const dataPath = path.join(process.cwd(), 'dataBase', 'database.json')
+const dataPath = path.join(process.cwd(), 'dataBase', 'database.json');
 
 module.exports = {
-    findAllUsers: async () => {
+    findAllUsers: async (query) => {
         const data = await readFilePromise(dataPath);
+        const {username, email} = query;
 
-        const users = JSON.parse(data);
+        let users = JSON.parse(data);
+
+        if (username) {
+            users = users.filter(user => user.name.toLowerCase() === username.toLowerCase());
+        }
+
+        if (email) {
+            users = users.filter(user => user.email.toLowerCase() === email.toLowerCase());
+        }
 
         return users;
     },
@@ -22,18 +31,8 @@ module.exports = {
 
         const users = JSON.parse(data);
 
-        const foundUser = users.find(user => user.id === +userId)
+        return users.find(user => user.id === +userId);
 
-        return foundUser;
-    },
-    findUserNameById: async (userName) => {
-        const data = await readFilePromise(dataPath);
-
-        const users = JSON.parse(data);
-
-        const foundUser = users.find(user => user.name.toLowerCase() === userName.toLowerCase())
-
-        return foundUser;
     },
 
     createUser: async (userObject) => {
@@ -41,12 +40,12 @@ module.exports = {
 
         const users = JSON.parse(data);
 
-        users.sort((a, b) => a.id - b.id)
+        users.sort((a, b) => a.id - b.id);
         userObject.id = users[users.length - 1].id + 1;
 
-        users.push(userObject)
+        users.push(userObject);
 
-        await writeFilePromise(dataPath, JSON.stringify(users))
+        await writeFilePromise(dataPath, JSON.stringify(users));
     },
 
     deleteUserById: async (userId) => {
@@ -54,9 +53,9 @@ module.exports = {
 
         const users = JSON.parse(data);
 
-        const newArrayOfUsers = users.filter(user => user.id !== +userId)
+        const newArrayOfUsers = users.filter(user => user.id !== +userId);
 
-        await writeFilePromise(dataPath, JSON.stringify(newArrayOfUsers))
+        await writeFilePromise(dataPath, JSON.stringify(newArrayOfUsers));
     }
 }
 

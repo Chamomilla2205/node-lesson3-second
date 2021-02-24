@@ -11,9 +11,10 @@ module.exports = {
 
     INVALID_ID: 'ID is not valid',
 
-    INVALID_NAME: 'Name includes only letters'
+    INVALID_NAME: 'Name includes only letters',
 
+    USER_CREATED: 'User is created',
 
-
+    USER_DELETED: 'USER IS DELETED'
 
 }
