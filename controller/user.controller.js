@@ -22,7 +22,7 @@ module.exports = {
 
             res.json(user);
         } catch (e) {
-
+            res.status(errorCodes.BAD_REQUEST).json(e.message)
         }
     },
 
